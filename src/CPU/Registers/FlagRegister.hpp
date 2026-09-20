@@ -18,10 +18,10 @@ namespace dmg
         void set_h_flag(bool value) { m_data = value ? m_data | (1u << 5) : m_data & ~(1u << 5); }
         void set_c_flag(bool value) { m_data = value ? m_data | (1u << 4) : m_data & ~(1u << 4); }
 
-        [[nodiscard]] bool read_z_flag() const { return (m_data & 0b10000000) >> 7; }
-        [[nodiscard]] bool read_n_flag() const { return (m_data & 0b01000000) >> 6;}
-        [[nodiscard]] bool read_h_flag() const { return (m_data & 0b00100000) >> 5;}
-        [[nodiscard]] bool read_c_flag() const { return (m_data & 0b00010000) >> 4;}
+        [[nodiscard]] uint8_t read_z_flag() const { return (m_data & 0b10000000) >> 7; }
+        [[nodiscard]] uint8_t read_n_flag() const { return (m_data & 0b01000000) >> 6;}
+        [[nodiscard]] uint8_t read_h_flag() const { return (m_data & 0b00100000) >> 5;}
+        [[nodiscard]] uint8_t read_c_flag() const { return (m_data & 0b00010000) >> 4;}
     private:
         uint8_t m_data = 0;
 

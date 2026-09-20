@@ -15,16 +15,18 @@ namespace dmg
     {
     public:
         explicit CPU(MemoryBus& bus);
+
+        void Decode();
     private:
-        uint8_t fetch();
-        uint8_t read_memory(uint16_t address) const;
-        void write_memory(uint16_t address, uint8_t value);
+        uint8_t Fetch();
+        [[nodiscard]] uint8_t ReadMemory(uint16_t address) const;
+        void WriteMemory(uint16_t address, uint8_t value);
 
         ByteRegister A, B, C, D, E, H, L;
         FlagRegister F;
         ByteRegisterPair AF, BC, DE, HL;
 
-        TwoByteRegister PC;
+        TwoByteRegister PC {CARTRIDGE_HEADER};
         TwoByteRegister SP;
         //uint8_t IR = 0;
         //uint8_t IE = 0;

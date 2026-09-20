@@ -11,17 +11,22 @@ dmg::CPU::CPU(MemoryBus& bus)
 {
 }
 
-uint8_t dmg::CPU::fetch()
+void dmg::CPU::Decode()
 {
-    return m_bus.read(PC++);
+    control_unit.Decode();
 }
 
-uint8_t dmg::CPU::read_memory(uint16_t address) const
+uint8_t dmg::CPU::Fetch()
 {
-    return m_bus.read(address);
+    return m_bus.Read(PC++);
 }
 
-void dmg::CPU::write_memory(uint16_t address, uint8_t value)
+uint8_t dmg::CPU::ReadMemory(uint16_t address) const
 {
-    m_bus.write(address, value);
+    return m_bus.Read(address);
+}
+
+void dmg::CPU::WriteMemory(uint16_t address, uint8_t value)
+{
+    m_bus.Write(address, value);
 }

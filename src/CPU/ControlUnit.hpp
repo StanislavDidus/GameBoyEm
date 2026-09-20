@@ -13,7 +13,7 @@ namespace dmg
     public:
         explicit ControlUnit(CPU& cpu);
 
-        void decode();
+        void Decode();
     private:
         void NOP();
         void STOP();
@@ -23,6 +23,11 @@ namespace dmg
         void RLA();
         void DAA();
         void SCF();
+        void EI();
+        void RRCA();
+        void RRA();
+        void CPL();
+        void CCF();
 
         void JR_NZ();
         void JR_NC();
@@ -30,8 +35,11 @@ namespace dmg
         void JR_Z(int8_t s8);
         void JR_C(int8_t s8);
         void JP();
+        void JP(ATwoByteRegister& reg);
         void JP_NZ();
         void JP_NC();
+        void JP_Z();
+        void JP_C();
         void RST(uint8_t value);
 
         void LD(AByteRegister& dst, AByteRegister& src);
@@ -45,16 +53,21 @@ namespace dmg
         void LD_internal_a();
         void LD(ATwoByteRegister& reg);
 
-        void ADD(AByteRegister& dst, AByteRegister& src);
+        void ADD(AByteRegister& dst, const AByteRegister& src);
         void ADD(AByteRegister& dst, Address address);
         void ADD(AByteRegister& dst, uint8_t d8);
         void ADD(ATwoByteRegister& dst, int8_t s8);
-        void ADC(AByteRegister& dst, AByteRegister& src);
+        void ADD(ATwoByteRegister& dst, ATwoByteRegister& src);
+        void ADC(AByteRegister& src);
+        void ADC(Address address);
+        void ADC(uint8_t d8);
 
         void SUB(AByteRegister& a);
         void SUB(Address address);
         void SUB(uint8_t d8);
         void SBC(AByteRegister& reg);
+        void SBC(Address address);
+        void SBC(uint8_t d8);
 
         void AND(AByteRegister& a);
         void AND(Address address);
@@ -63,30 +76,40 @@ namespace dmg
         void OR(Address address);
         void OR(uint8_t d8);
         void XOR(AByteRegister& reg);
+        void XOR(Address address);
+        void XOR(uint8_t d8);
         void CP(AByteRegister& reg);
+        void CP(Address address);
+        void CP(uint8_t d8);
 
         void INC(ATwoByteRegister& reg);
         void INC(AByteRegister& reg);
         void INC(Address address);
+        void DEC(ATwoByteRegister& reg);
         void DEC(AByteRegister& reg);
         void DEC(Address address);
 
         void CALL_NZ();
         void CALL_NC();
+        void CALL_Z();
+        void CALL_C();
+        void CALL();
 
         void RET_NZ();
         void RET_NC();
         void RET_Z();
         void RET_C();
+        void RET();
+        void RETI();
 
         void POP(ATwoByteRegister& reg);
         void PUSH(ATwoByteRegister& reg);
 
-        uint8_t readA8();
-        uint16_t readD16();
-        int8_t readS8();
-        uint16_t readA16();
-        uint8_t readD8();
+        uint8_t ReadA8();
+        uint16_t ReadD16();
+        int8_t ReadS8();
+        uint16_t ReadA16();
+        uint8_t ReadD8();
 
         CPU& m_cpu;
     };

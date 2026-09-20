@@ -26,6 +26,11 @@ add_executable(GameBoyEm src/main.cpp
         src/CPU/Registers/Address.hpp
 )
 
+add_custom_target(copy_command
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_LIST_DIR}/copy_files.cmake
+)
+add_dependencies(GameBoyEm copy_command)
+
 target_include_directories(GameBoyEm PRIVATE src/)
 
 # target_compile_definitions(GameBoyEm PRIVATE SPDLOG_COMPILED_LIB)

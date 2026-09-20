@@ -3,6 +3,7 @@
 
 namespace dmg
 {
+    // Memory mappings
     static constexpr uint16_t ROM_BANK_0 = 0;
     static constexpr uint16_t CARTRIDGE_HEADER = 0x100;
     static constexpr uint16_t ROM_BANK_N = 0x4000;
@@ -23,10 +24,11 @@ namespace dmg
         MemoryBus() = default;
         ~MemoryBus() = default;
 
-        [[nodiscard]] uint16_t read(uint16_t address) const { return data[address]; }
-        void write(uint16_t address, uint8_t value) { data[address] = value; }
+        [[nodiscard]] uint16_t Read(uint16_t address) const { return data[address]; }
+        void Write(uint16_t address, uint8_t value) { data[address] = value; }
 
+        uint8_t* GetMemoryPointer() {return data;}
     private:
-        uint8_t data[65'536]; // 65 KiB
+        uint8_t data[65'536]; // 64 KiB
     };
 }
