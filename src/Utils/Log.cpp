@@ -11,5 +11,7 @@ namespace dmg
         spdlog::set_pattern("%^[%T] %n: %v%$");
         m_logger = spdlog::stdout_color_mt("DMG");
         m_logger->set_level(spdlog::level::trace);
+
+        DMG_INFO("Logger was initialized.");
     }
 }

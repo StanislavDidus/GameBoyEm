@@ -72,13 +72,13 @@ namespace dmg
         void AND(AByteRegister& a);
         void AND(Address address);
         void AND(uint8_t d8);
-        void OR(AByteRegister& a);
+        void OR(const AByteRegister& a);
         void OR(Address address);
         void OR(uint8_t d8);
-        void XOR(AByteRegister& reg);
+        void XOR(const AByteRegister& reg);
         void XOR(Address address);
         void XOR(uint8_t d8);
-        void CP(AByteRegister& reg);
+        void CP(const AByteRegister& reg);
         void CP(Address address);
         void CP(uint8_t d8);
 
@@ -103,7 +103,7 @@ namespace dmg
         void RETI();
 
         void POP(ATwoByteRegister& reg);
-        void PUSH(ATwoByteRegister& reg);
+        void PUSH(const ATwoByteRegister& reg);
 
         uint8_t ReadA8();
         uint16_t ReadD16();

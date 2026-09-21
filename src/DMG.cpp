@@ -4,7 +4,7 @@
 
 dmg::DMG::DMG()
 {
-    DMG_INFO("Game Boy was successfully created.");
+    DMG_INFO("Game Boy was initialized.");
 }
 
 void dmg::DMG::LoadROM(const std::filesystem::path& path)
@@ -12,7 +12,7 @@ void dmg::DMG::LoadROM(const std::filesystem::path& path)
     std::ifstream file(path, std::ios::binary | std::ios::ate);
     if (!file)
     {
-        DMG_ERROR("Could not open rom file for reading: {}\n", path.string());
+        DMG_ERROR("Could not open rom file for reading: {}", path.string());
     }
 
     std::streamsize file_size = file.tellg();
@@ -25,30 +25,19 @@ void dmg::DMG::LoadROM(const std::filesystem::path& path)
 
     if (file.bad())
     {
-        DMG_ERROR("Failed to read from a file: {}\n", path.string());
+        DMG_ERROR("Failed to read from a file: {}", path.string());
     }
 
-    DMG_INFO("Successfully loaded ROM: {}\n", path.filename().string());
+    DMG_INFO("ROM loaded: {}", path.filename().string());
 }
 
-void dmg::DMG::Start()
+void dmg::DMG::Update(double delta_time)
 {
-    bool is_running = true;
-
-    double delta = 0.0;
-    while (is_running)
+    clock_timer += delta_time;
+    if (clock_timer >= clock_time)
     {
-        std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
+        clock_timer = 0.0;
 
-        clock_timer += delta;
-        if (clock_timer >= clock_time)
-        {
-            clock_timer = 0.0;
-            m_cpu.Decode();
-        }
-
-        std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
-        using ms = std::chrono::duration<float, std::milli>;
-        delta = std::chrono::duration_cast<ms>(end - start).count() / 1000.0;
+        m_cpu.Decode();
     }
 }

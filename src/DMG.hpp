@@ -14,7 +14,7 @@ namespace dmg
         ~DMG() = default;
 
         void LoadROM(const std::filesystem::path& path);
-        void Start();
+        void Update(double delta_time);
     private:
         MemoryBus m_memory_bus{};
         CPU m_cpu {m_memory_bus};

@@ -17,7 +17,7 @@ void dmg::ControlUnit::Decode()
 
     //if (opcode != 0)
         //printf("cool\n");
-    DMG_INFO("Decoding instruction: {:08x} at {:08x}\n", opcode, m_cpu.PC.readWord() - 1);
+    DMG_INFO("Decoding instruction: {:08x} at {:08x}", opcode, m_cpu.PC.readWord() - 1);
 
     switch (opcode)
     {
@@ -814,7 +814,7 @@ void dmg::ControlUnit::AND(uint8_t d8)
     m_cpu.A.write(result);
 }
 
-void dmg::ControlUnit::OR(AByteRegister& a)
+void dmg::ControlUnit::OR(const AByteRegister& a)
 {
     uint8_t result = m_cpu.A.read() | a.read();
 
@@ -851,7 +851,7 @@ void dmg::ControlUnit::OR(uint8_t d8)
     m_cpu.A.write(result);
 }
 
-void dmg::ControlUnit::XOR(AByteRegister& reg)
+void dmg::ControlUnit::XOR(const AByteRegister& reg)
 {
     uint8_t result = m_cpu.A.read() ^ reg.read();
 
@@ -887,7 +887,7 @@ void dmg::ControlUnit::XOR(uint8_t d8)
     m_cpu.A.write(result);
 }
 
-void dmg::ControlUnit::CP(AByteRegister& reg)
+void dmg::ControlUnit::CP(const AByteRegister& reg)
 {
     uint8_t a_value = m_cpu.A.read();
     uint8_t reg_value = reg.read();
@@ -1051,7 +1051,7 @@ void dmg::ControlUnit::RET_NZ()
         const uint8_t low = m_cpu.ReadMemory(m_cpu.SP++);
         const uint8_t high = m_cpu.ReadMemory(m_cpu.SP++);
 
-        m_cpu.PC.writeWord((high << 8) | low);
+        m_cpu.PC.writeWord(high << 8 | low);
     }
 }
 
@@ -1062,7 +1062,7 @@ void dmg::ControlUnit::RET_NC()
         const uint8_t low = m_cpu.ReadMemory(m_cpu.SP++);
         const uint8_t high = m_cpu.ReadMemory(m_cpu.SP++);
 
-        m_cpu.PC.writeWord((high << 8) | low);
+        m_cpu.PC.writeWord(high << 8 | low);
     }
 }
 
@@ -1073,7 +1073,7 @@ void dmg::ControlUnit::RET_Z()
         const uint8_t low = m_cpu.ReadMemory(m_cpu.SP++);
         const uint8_t high = m_cpu.ReadMemory(m_cpu.SP++);
 
-        m_cpu.PC.writeWord((high << 8) | low);
+        m_cpu.PC.writeWord(high << 8 | low);
     }
 }
 
@@ -1084,7 +1084,7 @@ void dmg::ControlUnit::RET_C()
         const uint8_t low = m_cpu.ReadMemory(m_cpu.SP++);
         const uint8_t high = m_cpu.ReadMemory(m_cpu.SP++);
 
-        m_cpu.PC.writeWord((high << 8) | low);
+        m_cpu.PC.writeWord(high << 8 | low);
     }
 }
 
@@ -1093,7 +1093,7 @@ void dmg::ControlUnit::RET()
     const uint8_t low = m_cpu.ReadMemory(m_cpu.SP++);
     const uint8_t high = m_cpu.ReadMemory(m_cpu.SP++);
 
-    m_cpu.PC.writeWord((high << 8) | low);
+    m_cpu.PC.writeWord(high << 8 | low);
 }
 
 void dmg::ControlUnit::RETI()
@@ -1101,7 +1101,7 @@ void dmg::ControlUnit::RETI()
     const uint8_t low = m_cpu.ReadMemory(m_cpu.SP++);
     const uint8_t high = m_cpu.ReadMemory(m_cpu.SP++);
 
-    m_cpu.PC.writeWord((high << 8) | low);
+    m_cpu.PC.writeWord(high << 8 | low);
 }
 
 void dmg::ControlUnit::POP(ATwoByteRegister& reg)
@@ -1110,7 +1110,7 @@ void dmg::ControlUnit::POP(ATwoByteRegister& reg)
     reg.writeHigh(m_cpu.ReadMemory(m_cpu.SP++));
 }
 
-void dmg::ControlUnit::PUSH(ATwoByteRegister& reg)
+void dmg::ControlUnit::PUSH(const ATwoByteRegister& reg)
 {
     m_cpu.WriteMemory(--m_cpu.SP, reg.readHigh());
     m_cpu.WriteMemory(--m_cpu.SP, reg.readLow());
@@ -1125,7 +1125,7 @@ uint16_t dmg::ControlUnit::ReadD16()
 {
     uint8_t lsb = m_cpu.Fetch();
     uint8_t msb = m_cpu.Fetch();
-    return (msb << 8) | lsb;
+    return msb << 8 | lsb;
 }
 
 int8_t dmg::ControlUnit::ReadS8()
@@ -1137,7 +1137,7 @@ uint16_t dmg::ControlUnit::ReadA16()
 {
     uint8_t lsb = m_cpu.Fetch();
     uint8_t msb = m_cpu.Fetch();
-    return static_cast<uint16_t>((msb << 8) | lsb);
+    return static_cast<uint16_t>(msb << 8 | lsb);
 }
 
 uint8_t dmg::ControlUnit::ReadD8()
