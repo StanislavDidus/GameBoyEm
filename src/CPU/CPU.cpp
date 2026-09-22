@@ -16,6 +16,29 @@ void dmg::CPU::Decode()
     control_unit.Decode();
 }
 
+dmg::CPU::CPUInfo dmg::CPU::GetInfo() const
+{
+    return CPUInfo
+    {
+        .F = F.read(),
+        .A = A.read(),
+        .B = B.read(),
+        .C = C.read(),
+        .D = D.read(),
+        .E = E.read(),
+        .H = H.read(),
+        .L = L.read(),
+        /*
+        .AF = AF.readWord(),
+        .BC = BC.readWord(),
+        .DE = DE.readWord(),
+        .HL = HL.readWord(),
+        */
+        .PC = PC.readWord(),
+        .SP = SP.readWord(),
+    };
+}
+
 uint8_t dmg::CPU::Fetch()
 {
     return m_bus.Read(PC++);

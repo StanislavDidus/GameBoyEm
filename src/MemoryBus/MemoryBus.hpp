@@ -21,14 +21,27 @@ namespace dmg
     class MemoryBus
     {
     public:
+        struct MemoryInfo
+        {
+            uint8_t* data = nullptr;
+            size_t size = 65'536;
+        };
+
         MemoryBus() = default;
         ~MemoryBus() = default;
 
-        [[nodiscard]] uint16_t Read(uint16_t address) const { return data[address]; }
-        void Write(uint16_t address, uint8_t value) { data[address] = value; }
+        [[nodiscard]] uint16_t Read(uint16_t address) const { return m_data[address]; }
+        void Write(uint16_t address, uint8_t value) { m_data[address] = value; }
 
-        uint8_t* GetMemoryPointer() {return data;}
+        MemoryInfo GetInfo() const
+        {
+            return MemoryInfo
+            {
+                .data = m_data,
+                .size = 65'536
+            };
+        }
     private:
-        uint8_t data[65'536]; // 64 KiB
+        mutable uint8_t m_data[65'536]; // 64 KiB
     };
 }

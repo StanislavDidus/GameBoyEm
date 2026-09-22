@@ -14,9 +14,17 @@ namespace dmg
     class CPU
     {
     public:
+        struct CPUInfo
+        {
+            uint8_t F, A, B, C, D, E, H, L;
+            uint16_t PC, SP;
+        };
+
         explicit CPU(MemoryBus& bus);
 
         void Decode();
+
+        CPUInfo GetInfo() const;
     private:
         uint8_t Fetch();
         [[nodiscard]] uint8_t ReadMemory(uint16_t address) const;
@@ -28,8 +36,6 @@ namespace dmg
 
         TwoByteRegister PC {CARTRIDGE_HEADER};
         TwoByteRegister SP;
-        //uint8_t IR = 0;
-        //uint8_t IE = 0;
 
         ControlUnit control_unit {*this};
 

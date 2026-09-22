@@ -8,6 +8,10 @@
 
 namespace dmg
 {
+    constexpr unsigned int WINDOW_WIDTH = 1080;
+    constexpr unsigned int WINDOW_HEIGHT = 720;
+    constexpr const char* TITLE = "Game Boy Emulator";
+
     inline void error_callback(int error, const char* description)
     {
         DMG_ERROR("Error happened in Graphics Context: {}", description);
@@ -36,7 +40,7 @@ namespace dmg
 
         glfwSetErrorCallback(error_callback);
 
-        GLFWwindow* window = glfwCreateWindow(640, 480, "Game Boy Emulator", nullptr, nullptr);
+        GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, TITLE, nullptr, nullptr);
         if (!window)
         {
             DMG_ERROR("GLFW Window could not be created.");

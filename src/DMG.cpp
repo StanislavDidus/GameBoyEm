@@ -21,7 +21,7 @@ void dmg::DMG::LoadROM(const std::filesystem::path& path)
 
     file.seekg(0, std::ios::beg);
 
-    file.read(reinterpret_cast<char*>(m_memory_bus.GetMemoryPointer()), file_size);
+    file.read(reinterpret_cast<char*>(m_memory_bus.GetInfo().data), file_size);
 
     if (file.bad())
     {
@@ -33,11 +33,23 @@ void dmg::DMG::LoadROM(const std::filesystem::path& path)
 
 void dmg::DMG::Update(double delta_time)
 {
-    clock_timer += delta_time;
-    if (clock_timer >= clock_time)
+    if (m_state == State::PLAY)
     {
-        clock_timer = 0.0;
-
         m_cpu.Decode();
     }
+}
+
+void dmg::DMG::SetState(State state)
+{
+    m_state = state;
+}
+
+dmg::DMG::DMGInfo dmg::DMG::GetInfo() const
+{
+    return DMGInfo
+    {
+        .dmg_state = m_state,
+        .cpu_info = m_cpu.GetInfo(),
+        .memory_info = m_memory_bus.GetInfo()
+    };
 }
