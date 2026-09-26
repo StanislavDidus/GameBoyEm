@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 4.2)
 add_subdirectory(spdlog EXCLUDE_FROM_ALL)
 add_subdirectory(glfw EXCLUDE_FROM_ALL)
 
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory(json EXCLUDE_FROM_ALL)
+
 set(IMGUI_HEADER_FILES
         imgui/imgui.h
         imgui/imgui_internal.h
