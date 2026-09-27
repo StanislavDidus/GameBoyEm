@@ -1,15 +1,15 @@
-[submodule "externals/spdlog"]
-	path = externals/spdlog
-	url = https://github.com/gabime/spdlog.git
-[submodule "externals/glfw"]
-	path = externals/glfw
+[submodule "GameBoyGUI/externals/glfw"]
+	path = GameBoyGUI/externals/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "externals/glad"]
-	path = externals/glad
+[submodule "GameBoyGUI/externals/glad"]
+	path = GameBoyGUI/externals/glad
 	url = https://github.com/premake-libs/glad.git
-[submodule "externals/imgui"]
-	path = externals/imgui
+[submodule "GameBoyGUI/externals/imgui"]
+	path = GameBoyGUI/externals/imgui
 	url = https://github.com/ocornut/imgui.git
-[submodule "externals/json"]
-	path = externals/json
+[submodule "GameBoyCore/externals/spdlog"]
+	path = GameBoyCore/externals/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "GameBoyTests/externals/json"]
+	path = GameBoyTests/externals/json
 	url = https://github.com/nlohmann/json.git
