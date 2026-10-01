@@ -210,8 +210,8 @@ uint32_t dmg::ControlUnit::Step()
         case 0xBA: return CP(m_cpu.D);                                 // CP D
         case 0xCA: return JP_Z();                                      // JP Z, a16
         case 0xDA: return JP_C();                                      // JP C, a16
-        case 0xEA: return LD(Address(ReadA16()), m_cpu.A);             // LD (a16), A
-        case 0xFA: return LD(m_cpu.A, Address(ReadA16()));             // LD A, (a16)
+        case 0xEA: return LD_a16();                                    // LD (a16), A
+        case 0xFA: return LD_a16_();                                   // LD A, (a16)
 
         // 0xB Column
         case 0x0B: return DEC(m_cpu.BC);                               // DEC BC
@@ -375,30 +375,34 @@ uint32_t dmg::ControlUnit::RLA()
     return 4;
 }
 
+// Implementation was found on this website: https://blog.ollien.com/posts/gb-daa/
 uint32_t dmg::ControlUnit::DAA()
 {
     uint8_t offset = 0u;
-    const uint8_t a_value = m_cpu.A.Read();
     bool should_carry = false;
 
-    if ((a_value & 0xF) > 0x09 || m_cpu.F.ReadFlagH() == 1)
+    const uint8_t a_value = m_cpu.A.Read();
+    const bool half_carry = m_cpu.F.ReadFlagH();
+    const bool carry = m_cpu.F.ReadFlagC();
+    const bool subtract = m_cpu.F.ReadFlagN();
+
+    if (!subtract && (a_value & 0xF) > 0x09 || half_carry)
     {
         offset |= 0x06;
     }
-    if (a_value > 0x99 || m_cpu.F.ReadFlagC() == 1)
+    if (!subtract && a_value > 0x99 || carry)
     {
         offset |= 0x60;
         should_carry = true;
     }
 
     uint8_t result = 0u;
-    if (m_cpu.F.ReadFlagN() == 0)
+    if (!subtract)
         result = a_value + offset;
     else
         result = a_value - offset;
 
     m_cpu.F.SetFlagZ(result == 0);
-    //m_cpu.F.set_n_flag();
     m_cpu.F.SetFlagH(false);
     m_cpu.F.SetFlagC(should_carry);
 
@@ -466,12 +470,18 @@ uint32_t dmg::ControlUnit::CPL()
 {
     m_cpu.A.Write(~m_cpu.A.Read());
 
+    m_cpu.F.SetFlagN(true);
+    m_cpu.F.SetFlagH(true);
+
     return 4;
 }
 
 uint32_t dmg::ControlUnit::CCF()
 {
-    m_cpu.F.SetFlagC(~m_cpu.F.ReadFlagC());
+    m_cpu.F.SetFlagC(!m_cpu.F.ReadFlagC());
+
+    m_cpu.F.SetFlagN(false);
+    m_cpu.F.SetFlagH(false);
 
     return 4;
 }
@@ -536,7 +546,7 @@ uint32_t dmg::ControlUnit::JP()
 {
     m_cpu.PC.WriteWord(ReadA16());
 
-    return 12;
+    return 16;
 }
 
 uint32_t dmg::ControlUnit::JP(ATwoByteRegister& reg)
@@ -645,8 +655,16 @@ uint32_t dmg::ControlUnit::LD(AByteRegister& reg, Address address)
 
 uint32_t dmg::ControlUnit::LD_SP_S8(ATwoByteRegister& dst)
 {
-    dst.WriteWord(m_cpu.SP.ReadWord() + ReadS8());
+    int8_t s8 = ReadS8();
+    uint16_t sp = m_cpu.SP.ReadWord();
+    uint16_t result = static_cast<uint16_t>(sp + s8);
 
+    m_cpu.F.SetFlagZ(false);
+    m_cpu.F.SetFlagN(false);
+     m_cpu.F.SetFlagH(((sp & 0xF) + (static_cast<uint8_t>(s8) & 0xF)) > 0xF);
+    m_cpu.F.SetFlagC(((sp & 0xFF) + (static_cast<uint8_t>(s8) & 0xFF)) > 0xFF);
+
+    dst.WriteWord(result);
     return 12;
 }
 
@@ -692,6 +710,20 @@ uint32_t dmg::ControlUnit::LD_internal_c_()
     m_cpu.A.Write(m_cpu.ReadMemory(make_uint16_t(0xFF, m_cpu.C.Read())));
 
     return 8;
+}
+
+uint32_t dmg::ControlUnit::LD_a16()
+{
+    m_cpu.WriteMemory(ReadA16(), m_cpu.A.Read());
+
+    return 16;
+}
+
+uint32_t dmg::ControlUnit::LD_a16_()
+{
+    m_cpu.A.Write(m_cpu.ReadMemory(ReadA16()));
+
+    return 16;
 }
 
 uint32_t dmg::ControlUnit::LD(ATwoByteRegister& reg)
@@ -749,8 +781,8 @@ uint32_t dmg::ControlUnit::ADD(ATwoByteRegister& dst, int8_t s8)
 
     m_cpu.F.SetFlagZ(false);
     m_cpu.F.SetFlagN(false);
-    m_cpu.F.SetFlagC(result > 0xFF);
-    m_cpu.F.SetFlagH((dst.ReadWord() & 0xF) + (s8 & 0xF) > 0xF);
+    m_cpu.F.SetFlagC(result > 0xFFFF);
+    m_cpu.F.SetFlagH((dst.ReadWord() & 0xFF) + (s8 & 0xFF) > 0xFF);
 
     dst.WriteWord(static_cast<uint16_t>(result));
 
@@ -761,10 +793,9 @@ uint32_t dmg::ControlUnit::ADD(ATwoByteRegister& dst, ATwoByteRegister& src)
 {
     uint32_t result = dst.ReadWord() + src.ReadWord();
 
-    m_cpu.F.SetFlagZ(false);
     m_cpu.F.SetFlagN(false);
-    m_cpu.F.SetFlagC(result > 0xFF);
-    m_cpu.F.SetFlagH((dst.ReadWord() & 0xF) + (src.ReadWord() & 0xF) > 0xF);
+    m_cpu.F.SetFlagH((dst.ReadWord() & 0xFFF) + (src.ReadWord() & 0xFFF) > 0xFFF);
+    m_cpu.F.SetFlagC(result > 0xFFFF);
 
     dst.WriteWord(static_cast<uint16_t>(result));
 
@@ -1133,13 +1164,12 @@ uint32_t dmg::ControlUnit::DEC(AByteRegister& reg)
 
 uint32_t dmg::ControlUnit::DEC(Address address)
 {
-    uint8_t value = address.m_address;
+    uint8_t value = m_cpu.ReadMemory(address.m_address);
     uint8_t result = value - 1;
 
     m_cpu.F.SetFlagZ(result == 0);
     m_cpu.F.SetFlagN(true);
     m_cpu.F.SetFlagH(((value & 0xF) == 0));
-    //m_cpu.F.set_c_flag(result == 0);
 
     m_cpu.WriteMemory(address.m_address, result);
 

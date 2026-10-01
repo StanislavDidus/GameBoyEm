@@ -3,12 +3,13 @@
 #include <cstdint>
 
 #include "ControlUnit.hpp"
-#include "../../include/DMG/RegisterInfo.hpp"
+#include "DMG/RegisterInfo.hpp"
 #include "MemoryBus/MemoryBus.hpp"
 #include "Registers/ByteRegister.hpp"
 #include "Registers/ByteRegisterPair.hpp"
 #include "Registers/FlagRegister.hpp"
 #include "Registers/TwoByteRegister.hpp"
+#include "Interrupt.hpp"
 
 namespace dmg
 {
@@ -21,6 +22,8 @@ namespace dmg
 
         uint32_t Step();
         void Reset();
+
+        uint32_t HandleInterrupts();
 
         [[nodiscard]] RegisterInfo GetRegisterInfo() const;
     private:
@@ -35,7 +38,11 @@ namespace dmg
         TwoByteRegister PC {CARTRIDGE_HEADER};
         TwoByteRegister SP;
 
-        ControlUnit control_unit {*this};
+        bool IME = false;
+        Interrupt IE {0};
+        Interrupt IF {0};
+
+        ControlUnit m_control_unit {*this};
 
         MemoryBus& m_bus;
 

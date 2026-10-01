@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include "DMG/Utils/Log.hpp"
+
 dmg::CPU::CPU(MemoryBus& bus)
     : AF{A, F}
     , BC{ B, C}
@@ -27,7 +29,7 @@ void dmg::CPU::SetRegisters(const RegisterInfo& register_info)
 
 uint32_t dmg::CPU::Step()
 {
-    return control_unit.Step();
+    return m_control_unit.Step();
 }
 
 void dmg::CPU::Reset()
@@ -42,6 +44,50 @@ void dmg::CPU::Reset()
     E.Write(0);
     H.Write(0);
     L.Write(0);
+}
+
+uint32_t dmg::CPU::HandleInterrupts()
+{
+    if (IME)
+    {
+        const auto& result = IE.GetSharedBit(IF);
+        if (result.has_value())
+        {
+            uint8_t value = result.value();
+
+            IME = false;
+            IF.Reset(1 << value);
+
+            WriteMemory(--SP, PC.ReadHigh());
+            WriteMemory(--SP, PC.ReadLow());
+
+            switch (value)
+            {
+            case 0: // VBLANK
+                PC.WriteWord(0x40);
+                break;
+            case 1: // LCD
+                PC.WriteWord(0x48);
+                break;
+            case 2: // Timer
+                PC.WriteWord(0x50);
+                break;
+            case 3: // Serial
+                PC.WriteWord(0x58);
+                break;
+            case 4: // Joypad
+                PC.WriteWord(0x60);
+                break;
+            default:
+                DMG_WARN("Interrupt returned a flag that is not supported: {}", value);
+                break;
+            }
+
+            return 20;
+        }
+    }
+
+    return 0;
 }
 
 dmg::RegisterInfo dmg::CPU::GetRegisterInfo() const

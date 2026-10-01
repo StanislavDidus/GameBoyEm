@@ -34,12 +34,12 @@ namespace dmg
         RegisterInfo register_info = dmg.GetRegisters();
         bool all_ok = true;
 
-        auto check = [&](const char* name, auto actual, auto exp)
+        auto check = [&](const char* name, uint16_t actual, uint16_t exp)
         {
             if (actual != exp)
             {
                 std::cout << std::hex << std::uppercase
-                           << name << " mismatch: expected 0x" << exp
+                           << name << " mismatch: expected 0x" << +exp
                            << ", got 0x" << +actual << std::dec << "\n";
                 all_ok = false;
             }

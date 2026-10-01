@@ -24,6 +24,7 @@ set(HEADER_FILES
         #src/Test/Test.hpp
         #include/DMGInitState.hpp
         include/DMG/RegisterInfo.hpp
+        src/CPU/Interrupt.hpp
 )
 
 set(SOURCE_FILES

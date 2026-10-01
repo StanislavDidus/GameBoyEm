@@ -56,6 +56,8 @@ namespace dmg
         uint32_t LD_internal_c();
         uint32_t LD_internal_a8_();
         uint32_t LD_internal_c_();
+        uint32_t LD_a16();
+        uint32_t LD_a16_();
 
         uint32_t LD(ATwoByteRegister& reg);
 

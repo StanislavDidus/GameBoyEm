@@ -53,6 +53,12 @@ void dmg::DMG::Update()
 
         while (total_cycles < cycle_target)
         {
+            uint32_t add = m_cpu->HandleInterrupts();
+            if (add != 0)
+            {
+                total_cycles += add;
+                continue;
+            }
             total_cycles += m_cpu->Step();
         }
 

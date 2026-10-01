@@ -11,7 +11,7 @@ namespace dmg
         ~FlagRegister() override = default;
 
         [[nodiscard]] uint8_t Read() const override { return m_data; }
-        void Write(const uint8_t data) override{ m_data = data; }
+        void Write(const uint8_t data) override{ m_data = data & 0xF0; /*Mask the lower 4 bits, they are always 0.*/ }
 
         void SetFlagZ(bool value) { m_data = value ? m_data | (1u << 7) : m_data & ~(1u << 7); }
         void SetFlagN(bool value) { m_data = value ? m_data | (1u << 6) : m_data & ~(1u << 6); }
